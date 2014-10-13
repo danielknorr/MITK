@@ -17,10 +17,10 @@ See LICENSE.txt or http://www.mitk.org for details.
 #ifndef MITKUSTelemedSDKHeader_H
 #define MITKUSTelemedSDKHeader_H
 
-/*#include <strmif.h>
-#include <usgfw2.h>
-#include <usgfw.h>
-#include <usgscanb.h>*/
+//#include <strmif.h>
+//#include <usgfw2.h>
+//#include <usgfw.h>
+//#include <usgscanb.h>
 
 #include <Usgfw2.tlh>
 
