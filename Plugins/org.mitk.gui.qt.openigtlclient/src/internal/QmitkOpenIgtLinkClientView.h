@@ -1,43 +1,26 @@
 /*===================================================================
 
-The Medical Imaging Interaction Toolkit (MITK)
-
-Copyright (c) German Cancer Research Center,
-Division of Medical and Biological Informatics.
-All rights reserved.
-
-This software is distributed WITHOUT ANY WARRANTY; without
-even the implied warranty of MERCHANTABILITY or FITNESS FOR
-A PARTICULAR PURPOSE.
-
-See LICENSE.txt or http://www.mitk.org for details.
+@author Daniel Knorr
 
 ===================================================================*/
 
-#ifndef QMITKXNATTREEBROWSERVIEW_H
-#define QMITKXNATTREEBROWSERVIEW_H
-
-#include <berryQtSelectionProvider.h>
+#ifndef QMITKOPENIGTLINKCLIENTVIEW_H
+#define QMITKOPENIGTLINKCLIENTVIEW_H
 
 #include <QmitkAbstractView.h>
 
-#include "ui_QmitkXnatTreeBrowserViewControls.h"
+#include "ui_QmitkOpenIgtLinkClientViewControls.h"
 
-// ctkXnatCore
-#include "ctkXnatSession.h"
-
-// ctkXnatWidget
-#include "ctkXnatTreeModel.h"
 
 /*!
-\brief QmitkXnatTreeBrowserView
+\brief QmitkOpenIgtLinkClientView
 
 \warning This class is not yet documented. Use "git blame" and ask the author to provide basic documentation.
 
 \sa QmitkFunctionality
 \ingroup ${plugin_target}_internal
 */
-class QmitkXnatTreeBrowserView : public QmitkAbstractView
+class QmitkOpenIgtLinkClientView : public QmitkAbstractView
 {
   // this is needed for all Qt objects that should have a Qt meta-object
   // (everything that derives from QObject and wants to have signal/slots)
@@ -45,32 +28,24 @@ class QmitkXnatTreeBrowserView : public QmitkAbstractView
 
 public:
 
-  QmitkXnatTreeBrowserView();
-  ~QmitkXnatTreeBrowserView();
+  QmitkOpenIgtLinkClientView();
+  ~QmitkOpenIgtLinkClientView();
 
   static const std::string VIEW_ID;
 
   virtual void CreateQtPartControl(QWidget *parent);
 
-  berry::QtSelectionProvider::Pointer m_SelectionProvider;
-
   protected slots:
-
-    /// \brief Opens or reuses the xnat editor with the activated node as root item.
-    void OnActivatedNode(const QModelIndex& index);
+    void DoSomething();
 
 protected:
 
   virtual void SetFocus();
 
-  Ui::QmitkXnatTreeBrowserViewControls m_Controls;
+  Ui::QmitkOpenIgtLinkClientViewControls m_Controls;
 
 private:
 
-  void SetSelectionProvider();
-
-  ctkXnatSession* m_Session;
-  ctkXnatTreeModel* m_TreeModel;
 };
 
-#endif // QMITKXNATTREEBROWSERVIEW_H
+#endif // QMITKOPENIGTLINKCLIENTVIEW_H
