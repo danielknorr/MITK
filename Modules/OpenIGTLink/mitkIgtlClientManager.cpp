@@ -4,6 +4,9 @@
 
 #include "mitkIgtlClientManager.h"
 
+#include <iostream>
+#include <iomanip>
+
 #include "igtlOSUtil.h"
 #include "igtlMessageHeader.h"
 #include "igtlTransformMessage.h"
@@ -57,10 +60,10 @@ namespace mitk {
         headerMsg->InitPack();
 
         // Receive generic header from the socket
-        int r = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+        int r = m_Client->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
         if (r == 0)
         {
-          socket->CloseSocket();
+          m_Client->CloseSocket();
           return;
         }
         if (r != headerMsg->GetPackSize())
@@ -85,24 +88,24 @@ namespace mitk {
         // Check data type and receive data body
         if (strcmp(headerMsg->GetDeviceType(), "TRANSFORM") == 0)
         {
-          ReceiveTransform(socket, headerMsg);
+          ReceiveTransform(m_Client, headerMsg);
         }
         else if (strcmp(headerMsg->GetDeviceType(), "POSITION") == 0)
         {
-          ReceivePosition(socket, headerMsg);
+          ReceivePosition(m_Client, headerMsg);
         }
         else if (strcmp(headerMsg->GetDeviceType(), "IMAGE") == 0)
         {
-          ReceiveImage(socket, headerMsg);
+          ReceiveImage(m_Client, headerMsg);
         }
         else if (strcmp(headerMsg->GetDeviceType(), "STATUS") == 0)
         {
-          ReceiveStatus(socket, headerMsg);
+          ReceiveStatus(m_Client, headerMsg);
         }
         else
         {
           std::cerr << "Receiving : " << headerMsg->GetDeviceType() << std::endl;
-          socket->Skip(headerMsg->GetBodySizeToRead(), 0);
+          m_Client->Skip(headerMsg->GetBodySizeToRead(), 0);
         }
       }
     }
@@ -110,7 +113,7 @@ namespace mitk {
 
   void IgtlClientManager::StopClient()
   {
-    socket->CloseSocket();
+    m_Client->CloseSocket();
   }
 } // end of namespace mitk
 
