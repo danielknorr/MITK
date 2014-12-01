@@ -19,6 +19,7 @@ public:
   virtual void run();
 
   void Disconnect();
+  bool IsConnected();
 
   void SetServerAddress(char* serverIp, int serverPort);
 
