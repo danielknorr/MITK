@@ -54,6 +54,7 @@ set(module_dirs
     DicomRT
     IOExt
     XNAT
+    OpenIGTLink
 )
 
 if(MITK_ENABLE_PIC_READER)

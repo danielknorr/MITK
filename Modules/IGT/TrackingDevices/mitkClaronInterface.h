@@ -28,7 +28,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <itkObjectFactory.h>
 
 #ifdef _WIN64  //Defined for applications for Win64.
-typedef long mtHandle;
+typedef long long mtHandle;
 #else
 typedef int mtHandle;
 #endif

@@ -1,0 +1,5 @@
+set(Plugin-Name "OpenIGTLinkClient Plugin")
+set(Plugin-Version "0.1")
+set(Plugin-Vendor "Daniel Knorr")
+set(Plugin-ContactAddress "Daniel_Knorr@gmx.des")
+set(Require-Plugin org.mitk.gui.qt.common)
