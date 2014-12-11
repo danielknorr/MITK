@@ -18,11 +18,19 @@ public:
   IgtlCommandClient();
   ~IgtlCommandClient();
 
+  void StartRecording(QString outFilenamePath);
+  void StopRecording();
+
+  void ReconstructVolume(QString inFilenamePath, QString outFilenamePath);
+
 protected:
 
   virtual void Receive();
 
 private:
+
+  void ReceiveCommand();
+  void ReceiveImage();
 
 };
 
