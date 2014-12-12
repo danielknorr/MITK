@@ -5,6 +5,7 @@
 ===================================================================*/
 
 #include "org_mitk_gui_qt_openigtlclient_Activator.h"
+
 #include "QmitkOpenIgtLinkClientView.h"
 
 #include <QtPlugin>
@@ -33,6 +34,7 @@ void org_mitk_gui_qt_openigtlclient_Activator::start(ctkPluginContext* context)
 void org_mitk_gui_qt_openigtlclient_Activator::stop(ctkPluginContext* context)
 {
   Q_UNUSED(context)
+  this->m_Context = 0;
 }
 
 }
