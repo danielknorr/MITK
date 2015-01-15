@@ -12,7 +12,7 @@
 #include <usGetModuleContext.h>
 #include <usModuleInitialization.h>
 
-US_INITIALIZE_MODULE("MitkOpenIGTLink", "MitkOpenIGTLink")
+US_INITIALIZE_MODULE
 
 namespace mitk {
 
