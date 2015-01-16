@@ -4,7 +4,8 @@
 
 #include "mitkIgtlTransformClient.h"
 
-#include "igtlOSUtil.h"
+#include <igtlOSUtil.h>
+#include <igtlTransformMessage.h>
 
 namespace mitk {
 
@@ -25,7 +26,7 @@ void IgtlTransformClient::Receive()
   transMsg->AllocatePack();
 
   // Receive transform data from the socket
-  socket->Receive(transMsg->GetPackBodyPointer(), transMsg->GetPackBodySize());
+  m_Socket->Receive(transMsg->GetPackBodyPointer(), transMsg->GetPackBodySize());
 
   // Deserialize the transform data
   // If you want to skip CRC check, call Unpack() without argument.

@@ -6,11 +6,15 @@
 
 #include <mitkImage.h>
 #include <mitkDataNode.h>
+#include <mitkOpenCVToMitkImageFilter.h>
+#include <mitkImageWriteAccessor.h>
 
 #include <igtlStringMessage.h>
 #include <igtlImageMessage.h>
 
 #include <qfile.h>
+
+#include <cv.h>
 
 namespace mitk {
 
@@ -128,15 +132,28 @@ namespace mitk {
 
       // Creating a mitk::ImageDescriptor
       mitk::ImageDescriptor::Pointer desc;
-      //desc: Create form file
+      //desc: Create from file
 
       // Initializing a mitk::Image
       mitk::Image::Pointer mitkImage = mitk::Image::New();
       mitkImage->Initialize(desc);
 
+      mitk::ImageWriteAccessor writeAccess(mitkImage);
+      void* vPointer = writeAccess.GetData();
+
+      memcpy(vPointer, image->GetScalarPointer(), image->GetImageSize());
+
+      cv::Mat cvImage(3, size, scalarType, vPointer);
+
+      //Transform with Filter from cv::Mat to mitk::Image
+      mitk::OpenCVToMitkImageFilter::Pointer filter = mitk::OpenCVToMitkImageFilter::New();
+      filter->SetOpenCVMat(cvImage);
+      filter->Update();
+      mitkImage = filter->GetOutput();
+
       mitk::DataNode::Pointer node = mitk::DataNode::New();
       node->SetData(mitkImage);
-      //Add to DataManager
+      // Addto DataStorage (MANAGER)
     }
   }
 
