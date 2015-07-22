@@ -12,33 +12,28 @@
 
 namespace mitk {
 
-class IgtlReceiveClient : QRunnable
+class IgtlReceiveClient : public QRunnable
 {
 public:
 
-  virtual void run();
+  void Connect();
+  virtual void Receive() = 0;
 
   void Disconnect();
   bool IsConnected();
 
-  void SetServerAddress(char* serverIp, int serverPort);
+  std::string m_ServerIp;
+  int m_ServerPort;
+
+  volatile bool m_IsRunning;
 
 protected:
 
   IgtlReceiveClient();
   ~IgtlReceiveClient();
 
-  void Connect();
-
-  virtual void Receive() = 0;
-
   igtl::ClientSocket::Pointer m_Socket;
   igtl::MessageHeader::Pointer m_Header;
-
-private:
-
-  char* m_ServerIp;
-  int m_ServerPort;
 
 };
 

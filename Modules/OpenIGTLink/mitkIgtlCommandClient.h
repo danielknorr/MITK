@@ -7,25 +7,25 @@
 
 #include "MitkOPENIGTLINKExports.h"
 
-#include "mitkIgtlReceiveClient.h"
+#include <mitkIgtlReceiveClient.h>
 
 namespace mitk {
 
-class MITK_OPENIGTLINK_EXPORT IgtlCommandClient : IgtlReceiveClient
+class MITK_OPENIGTLINK_EXPORT IgtlCommandClient : public IgtlReceiveClient
 {
 public:
 
   IgtlCommandClient();
   ~IgtlCommandClient();
 
+  void run();
+
+  virtual void Receive();
+
   void StartRecording(QString outFilenamePath);
   void StopRecording();
 
   void ReconstructVolume(QString inFilenamePath, QString outFilenamePath);
-
-protected:
-
-  virtual void Receive();
 
 private:
 

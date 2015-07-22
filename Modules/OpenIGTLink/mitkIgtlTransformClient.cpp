@@ -6,6 +6,7 @@
 
 #include <igtlOSUtil.h>
 #include <igtlTransformMessage.h>
+#include <itkMatrix.h>
 
 namespace mitk {
 
@@ -34,11 +35,35 @@ void IgtlTransformClient::Receive()
 
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
   {
-    // Retrive the transform data
+    // Retrieve the transform data
     igtl::Matrix4x4 matrix;
     transMsg->GetMatrix(matrix);
-    // TODO
+    typedef itk::Matrix<float, 4, 4> KalibrationMatrix;
+    KalibrationMatrix kalibMatrix;
+    for (int i = 0; i < 4; i++)
+    {
+      for (int j = 0; j < 4; j++)
+      {
+        kalibMatrix(i,j) = matrix[i][j];
+        std::cout << "Matrix: " << i << ". row, " << j << ". col - value: " << matrix[i][j];
+      }
+    }
+
+    // itk::matrix is put into mitk::matrix
+    m_TransformMatrix = kalibMatrix;
+    std::cout << "Transform Matrix received.";
   }
+}
+
+mitk::Matrix<float, 4, 4> IgtlTransformClient::GetTransformMatrix()
+{
+  return m_TransformMatrix;
+}
+
+void IgtlTransformClient::run()
+{
+  Connect();
+  this->Receive();
 }
 
 }  // end of namespace mitk

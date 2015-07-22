@@ -2,30 +2,34 @@
 * @author Daniel Knorr
 */
 
-#ifndef MITKIGTLCOMMANDCLIENT_H
-#define MITKIGTLCOMMANDCLIENT_H
+#ifndef MITKIGTLTRANSFORMCLIENT_H
+#define MITKIGTLTRANSFORMCLIENT_H
 
 #include "MitkOPENIGTLINKExports.h"
 
-#include "mitkIgtlReceiveClient.h"
+#include <mitkIgtlReceiveClient.h>
+#include <mitkMatrix.h>
 
 namespace mitk {
 
-class MITK_OPENIGTLINK_EXPORT IgtlTransformClient : IgtlReceiveClient
+class MITK_OPENIGTLINK_EXPORT IgtlTransformClient : public IgtlReceiveClient
 {
 public:
 
   IgtlTransformClient();
   ~IgtlTransformClient();
 
-protected:
+  void run();
 
-  virtual void Receive();
+  void Receive();
+
+  mitk::Matrix<float, 4, 4> GetTransformMatrix();
 
 private:
 
+  mitk::Matrix<float, 4, 4> m_TransformMatrix;
 };
 
 } // end of namespace mitk
 
-#endif // MITKIGTLCOMMANDCLIENT_H
+#endif // MITKIGTLTRANSFORMCLIENT_H

@@ -62,7 +62,7 @@ void OpenIGTLinkConnector::sendImage(igtl::ClientSocket::Pointer socket, igtl::T
   igtl::ImageMessage::Pointer imgMsg = igtl::ImageMessage::New();
   imgMsg->SetDimensions(_usImage->GetDimension(0),_usImage->GetDimension(1),1);
   imgMsg->SetSpacing(spacing);
-  if(_usImage->GetPixelType().GetPixelType()!= itk::ImageIOBase::SCALAR)
+  if(_usImage->GetPixelType().GetPixelType() != itk::ImageIOBase::SCALAR)
     return;
 
   switch (_usImage->GetPixelType().GetComponentType())

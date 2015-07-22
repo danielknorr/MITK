@@ -11,6 +11,9 @@
 
 #include "ui_QmitkOpenIgtLinkClientViewControls.h"
 
+#include <mitkIgtlReceiveClient.h>
+#include <mitkIgtlCommandClient.h>
+#include <mitkIgtlTransformClient.h>
 
 /*!
 \brief QmitkOpenIgtLinkClientView
@@ -35,8 +38,14 @@ public:
 
   virtual void CreateQtPartControl(QWidget *parent);
 
+  mitk::IgtlCommandClient* m_CommandClient;
+  mitk::IgtlTransformClient* m_TransformClient;
+
   protected slots:
-    void DoSomething();
+    void StartRecording();
+    void StopRecording();
+    void ReconstructRecording();
+    void StartConnection();
 
 protected:
 
@@ -45,6 +54,7 @@ protected:
   Ui::QmitkOpenIgtLinkClientViewControls m_Controls;
 
 private:
+
 
 };
 

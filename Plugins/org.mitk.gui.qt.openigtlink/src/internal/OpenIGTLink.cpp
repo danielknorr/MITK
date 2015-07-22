@@ -81,7 +81,7 @@ void OpenIGTLink::ToggleServer(){
     _serverRunning = !_serverRunning;
   }else{
     std::cerr << "Starting OpenIGTLink...";
-    mitk::DataNode::Pointer node = this->GetDataStorage()->GetNamedNode("US Image Stream");
+    mitk::DataNode::Pointer node = this->GetDataStorage()->GetNamedNode("US Support Viewing Stream");
     mitk::Image::Pointer image;
     if(node.IsNotNull() && NULL != node->GetData())
     {

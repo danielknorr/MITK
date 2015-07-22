@@ -4,15 +4,21 @@
 
 #include "mitkIgtlCommandClient.h"
 
+#include <usGetModuleContext.h>
+
 #include <mitkImage.h>
+#include <mitkPixelType.h>
 #include <mitkDataNode.h>
 #include <mitkOpenCVToMitkImageFilter.h>
 #include <mitkImageWriteAccessor.h>
+#include <mitkRenderWindowBase.h>
+#include <mitkDataStorage.h>
 
 #include <igtlStringMessage.h>
 #include <igtlImageMessage.h>
 
-#include <qfile.h>
+//#include <qfile.h>
+#include <qstring.h>
 
 #include <cv.h>
 
@@ -38,18 +44,19 @@ namespace mitk {
     m_Socket->Send(strMsg->GetPackPointer(), strMsg->GetPackSize());
     */
 
-    while (true)
+    while (m_IsRunning)
     {
       // Wait for a reply
       m_Header = igtl::MessageHeader::New();
       m_Header->InitPack();
       int rs = m_Socket->Receive(m_Header->GetPackPointer(), m_Header->GetPackSize());
+
       if (rs == 0)
       {
-        std::cerr << "Connection closed." << std::endl;
-        m_Socket->CloseSocket();
+        Disconnect();
         return;
       }
+
       if (rs != m_Header->GetPackSize())
       {
         std::cerr << "Message size information and actual data size don't match." << std::endl;
@@ -73,9 +80,11 @@ namespace mitk {
         std::cerr << "Receiving : " << m_Header->GetDeviceType() << std::endl;
         m_Socket->Skip(m_Header->GetBodySizeToRead(), 0);
       }
+
+      if(!IsConnected()) m_IsRunning = false;
     }
 
-    if(m_Socket.IsNotNull() && m_Socket->GetConnected()){
+    if(m_Socket.IsNotNull() && IsConnected()){
       m_Socket->CloseSocket();
     }
   }
@@ -95,7 +104,8 @@ namespace mitk {
     // If you want to skip CRC check, call Unpack() without argument.
     int c = command->Unpack(1);
 
-    if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
+    // if CRC check is OK
+    if (c & igtl::MessageHeader::UNPACK_BODY)
     {
       std::cout << command->GetString();
     }
@@ -116,7 +126,8 @@ namespace mitk {
     // If you want to skip CRC check, call Unpack() without argument.
     int c = image->Unpack(1);
 
-    if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
+    // if CRC check is OK
+    if (c & igtl::MessageHeader::UNPACK_BODY)
     {
       // Retrive the image data
       int   size[3];          // image dimension
@@ -130,30 +141,55 @@ namespace mitk {
       image->GetSpacing(spacing);
       image->GetSubVolume(svsize, svoffset);
 
-      // Creating a mitk::ImageDescriptor
-      mitk::ImageDescriptor::Pointer desc;
-      //desc: Create from file
+      // 
+      unsigned int dims[3];
+      dims[0]= size[0];
+      dims[1]= size[1];
+      dims[2]= size[2];
 
       // Initializing a mitk::Image
       mitk::Image::Pointer mitkImage = mitk::Image::New();
-      mitkImage->Initialize(desc);
+
+      switch (scalarType)
+      {
+      case igtl::ImageMessage::TYPE_UINT8:
+        mitkImage->Initialize(MakePixelType<uchar,3>(1),3,dims);
+        break;
+      case igtl::ImageMessage::TYPE_INT8:
+        mitkImage->Initialize(MakePixelType<char,3>(1),3,dims);
+        break;
+      case igtl::ImageMessage::TYPE_UINT16:
+        mitkImage->Initialize(MakePixelType<ushort,3>(1),3,dims);
+        break;
+      case igtl::ImageMessage::TYPE_INT16:
+        mitkImage->Initialize(MakePixelType<short,3>(1),3,dims);
+        break;
+      }
 
       mitk::ImageWriteAccessor writeAccess(mitkImage);
       void* vPointer = writeAccess.GetData();
 
       memcpy(vPointer, image->GetScalarPointer(), image->GetImageSize());
-
+      /*
       cv::Mat cvImage(3, size, scalarType, vPointer);
 
       //Transform with Filter from cv::Mat to mitk::Image
       mitk::OpenCVToMitkImageFilter::Pointer filter = mitk::OpenCVToMitkImageFilter::New();
       filter->SetOpenCVMat(cvImage);
       filter->Update();
-      mitkImage = filter->GetOutput();
 
+      //mitkImage = filter->GetOutput();
+      mitkImage->Initialize(filter->GetOutput());
+      */
+      // Create a new DataNode and enter the image
       mitk::DataNode::Pointer node = mitk::DataNode::New();
       node->SetData(mitkImage);
-      // Addto DataStorage (MANAGER)
+
+      // Add DataNode to DataStorage (MANAGER)
+      static us::ModuleContext* moduleContext = us::GetModuleContext();
+      mitk::DataStorage::Pointer ds =
+        moduleContext->GetService(moduleContext->GetServiceReference<mitk::DataStorage>());
+      ds->Add(node);
     }
   }
 
@@ -205,5 +241,12 @@ namespace mitk {
 
     Receive();
   }
+
+void IgtlCommandClient::run()
+{
+  //this->setAutoDelete(false);
+  Connect();
+  this->Receive();
+}
 
 }  // end of namespace mitk
