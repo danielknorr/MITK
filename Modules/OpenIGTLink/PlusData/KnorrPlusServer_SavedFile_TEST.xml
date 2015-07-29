@@ -1,0 +1,73 @@
+<PlusConfiguration version="2.1">
+  <DataCollection StartupDelaySec="1.0" >
+    <DeviceSet 
+      Name="KnorrPlusServer: Combine Tracking-Information and US-Video-Information."
+      Description="Combine Tracking-Information and US-Video-Information." />
+    <Device
+      Id="TrackerDevice"
+      Type="MicronTracker"
+      AcquisitionRate="15"
+      LocalTimeOffsetSec="0.0"
+      TemplateDirectory="Markers"
+      IniFile="MicronTracker.ini"
+      ToolReferenceFrame="Tracker">
+      <DataSources>
+        <DataSource Type="Tool" Id="Reference" BufferSize="500" AveragedItemsForFiltering="20" PortName="PhantomUnten" />
+        <DataSource
+          Type="Tool"
+          Id="Stylus"
+          BufferSize="500"
+          AveragedItemsForFiltering="20"
+          PortName="stabV"
+          Model="Example" />
+        <DataSource Type="Tool" Id="Probe" BufferSize="500" AveragedItemsForFiltering="20" PortName="probe" />
+      </DataSources>
+      <OutputChannels>
+        <OutputChannel Id="TrackerStream">
+          <DataSource Id="Reference" />
+          <DataSource Id="Stylus" />
+          <DataSource Id="Probe" />
+        </OutputChannel>
+      </OutputChannels>
+    </Device>
+    <Device
+      Id="VideoDevice"
+      Type="OpenIGTLinkVideo"
+      MessageType="IMAGE"
+      ServerAddress="127.0.0.1"
+      ServerPort="18900"
+      IgtlMessageCrcCheckEnabled="true"
+      AcquisitionRate="60"
+      LocalTimeOffset="0.0"
+      UseReceivedTimestamps="true"
+      ReconnectOnReceiveTimeout="false">
+      <DataSources>
+        <DataSource Type="Video" Id="Video" PortUsImageOrientation="MF" BufferSize="500" AveragedItemsForFiltering="20" />
+      </DataSources>
+      <OutputChannels>
+        <OutputChannel Id="VideoStream" VideoDataSourceId="Video" />
+      </OutputChannels>
+    </Device>
+    <Device Id="TrackedVideoDevice" Type="VirtualMixer">
+      <InputChannels>
+        <InputChannel Id="TrackerStream" />
+        <InputChannel Id="VideoStream" />
+      </InputChannels>
+      <OutputChannels>
+        <OutputChannel Id="TrackedVideoStream" />
+      </OutputChannels>
+    </Device>
+  </DataCollection>
+  <PlusOpenIGTLinkServer 
+    MaxNumberOfIgtlMessagesToSend="1" 
+    MaxTimeSpentWithProcessingMs="50" 
+    ListeningPort="18000" 
+    SendValidTransformsOnly="true" 
+    OutputChannelId="TrackedVideoStream" > 
+    <DefaultClientInfo> 
+      <MessageTypes> 
+        <Message Type="TRACKEDFRAME" />
+      </MessageTypes>
+    </DefaultClientInfo>
+  </PlusOpenIGTLinkServer>    
+</PlusConfiguration>

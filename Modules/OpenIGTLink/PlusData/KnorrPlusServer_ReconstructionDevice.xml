@@ -1,0 +1,106 @@
+<PlusConfiguration version="2.1">
+
+  <DataCollection StartupDelaySec="1.0">
+    <DeviceSet Name="KnorrPlusServer: Receive start recording, stop recording and reconstruct volume commands."
+		Description="Receive start recording, stop recording and reconstruct volume commands. Additionally send reconstructed volume." />
+    <Device
+      Id="TrackedVideoDevice"
+      Type="OpenIGTLinkVideo"
+      MessageType="TRACKEDFRAME"
+      ServerAddress="127.0.0.1"
+      ServerPort="18000"
+      IgtlMessageCrcCheckEnabled="false"
+      LocalTimeOffsetSec="0" >
+      <DataSources>
+        <DataSource Type="Video" Id="Video" PortUsImageOrientation="MF"  />
+      </DataSources>
+      <OutputChannels>
+        <OutputChannel Id="TrackedVideoStream" VideoDataSourceId="Video" />
+      </OutputChannels>
+    </Device>
+	
+    <Device
+      Id="CaptureDevice"
+      Type="VirtualDiscCapture"
+      BaseFilename="RecordingTest.mha"
+      EnableCapturing="FALSE" >
+      <InputChannels>
+        <InputChannel Id="TrackedVideoStream" />
+      </InputChannels>
+    </Device>
+    <Device
+      Id="VolumeReconstructorDevice"
+      Type="VirtualVolumeReconstructor"
+      OutputVolDeviceName="RecVol_Reference">
+      <InputChannels>
+        <InputChannel Id="TrackedVideoStream" />
+      </InputChannels>
+      <VolumeReconstruction
+        ImageCoordinateFrame="Image" ReferenceCoordinateFrame="Reference"
+        Interpolation="LINEAR" Optimization="NONE" CompoundingMode="MEAN" FillHoles="OFF" NumberOfThreads="2"
+        ClipRectangleOrigin="0 0" ClipRectangleSize="820 616"
+        OutputOrigin="-15 -15 30" OutputExtent="0 300 0 300 0 300" OutputSpacing="0.15 0.15 0.15" />
+    </Device>
+  </DataCollection>
+
+  <PlusOpenIGTLinkServer
+    MaxNumberOfIgtlMessagesToSend="1"
+    MaxTimeSpentWithProcessingMs="50"
+    ListeningPort="18944"
+    SendValidTransformsOnly="true"
+    OutputChannelId="TrackedVideoStream" >
+    <DefaultClientInfo>
+      <MessageTypes>
+        <Message Type="IMAGE" />
+        <Message Type="TRANSFORM" />
+      </MessageTypes>
+      <TransformNames>
+        <Transform Name="ProbeToTracker" />
+        <Transform Name="ReferenceToTracker" />
+		<Transform Name="ProbeToReference" />
+      </TransformNames>
+    <ImageNames>
+      <Image Name="Image" EmbeddedTransformToFrame="Reference" />
+    </ImageNames>
+    </DefaultClientInfo>
+  </PlusOpenIGTLinkServer>
+  
+  <CoordinateDefinitions>
+    <Transform From="Image" To="Probe"
+      Matrix="
+        -0.000342708	-0.0762193	0.0207621	-103.659
+        0.0780402	-0.00389799	-0.0097086	-21.8034
+        0.0101359	0.0204716	0.0754523	18.6773
+        0	0	0	1"
+       Error="1.6755" Date="101514_111150" />
+    <Transform From="Image" To="TransducerOriginPixel"
+      Matrix="
+        1	0	0	-410
+        0	1	0	5
+        0	0	1	0
+        0	0	0	1"
+       Date="2011.12.06 17:57:00" />
+    <Transform From="Phantom" To="Reference"
+      Matrix="
+        -0.0244994	0.0158707	-0.999574	92.9422
+        0.99966	-0.00858984	-0.0246379	-83.9521
+        -0.0089772	-0.999837	-0.0156549	48.7567
+        0	0	0	1"
+       Error="1.11529" Date="101414_105722" />
+    <Transform From="StylusTip" To="Stylus"
+      Matrix="
+        -0.998582	0.0455522	-0.0275364	-213.383
+        0.0455694	0.998961	0	9.73754
+        0.0275078	-0.00125482	-0.999621	5.87803
+        0	0	0	1"
+       Error="0.799556" Date="101414_105329" />
+    <Transform From="TransducerOriginPixel" To="TransducerOrigin"
+      Matrix="
+        0.07838	0	0	0
+        0	0.0793308	0	0
+        0	0	0.0788567	0
+        0	0	0	1"
+       Date="101514_111152" />
+  </CoordinateDefinitions>
+  
+</PlusConfiguration>

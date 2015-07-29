@@ -1,0 +1,207 @@
+<PlusConfiguration version="2.3" PlusRevision="Plus-2.1.2.3381 - Win32">
+  <DataCollection StartupDelaySec="1">
+    <DeviceSet Name="StylusCalibrationTest_Knorr_stylus_phantom_segparam_experiment_3" Description="test bla bla" />
+    <Device
+      Id="TrackerDevice"
+      Type="MicronTracker"
+      AcquisitionRate="15"
+      LocalTimeOffsetSec="0.0"
+      TemplateDirectory="Markers"
+      IniFile="MicronTracker.ini"
+      ToolReferenceFrame="Tracker"
+      Mode="PivotCalibration">
+      <DataSources>
+        <DataSource Type="Tool" Id="Reference" BufferSize="500" AveragedItemsForFiltering="20" PortName="PhantomUnten" />
+        <DataSource
+          Type="Tool"
+          Id="Stylus"
+          BufferSize="500"
+          AveragedItemsForFiltering="20"
+          PortName="stabV"
+          Model="Example" />
+        <DataSource Type="Tool" Id="Probe" BufferSize="500" AveragedItemsForFiltering="20" PortName="probe" />
+      </DataSources>
+      <OutputChannels>
+        <OutputChannel Id="TrackerStream">
+          <DataSource Id="Reference" />
+          <DataSource Id="Stylus" />
+          <DataSource Id="Probe" />
+        </OutputChannel>
+      </OutputChannels>
+    </Device>
+    <Device
+      Id="VideoDevice"
+      Type="OpenIGTLinkVideo"
+      MessageType="IMAGE"
+      ServerAddress="127.0.0.1"
+      ServerPort="18944"
+      IgtlMessageCrcCheckEnabled="true"
+      AcquisitionRate="60"
+      LocalTimeOffset="0.0"
+      UseReceivedTimestamps="true"
+      ReconnectOnReceiveTimeout="false">
+      <DataSources>
+        <DataSource Type="Video" Id="Video" PortUsImageOrientation="MF" BufferSize="500" AveragedItemsForFiltering="20" />
+      </DataSources>
+      <OutputChannels>
+        <OutputChannel Id="VideoStream" VideoDataSourceId="Video" />
+      </OutputChannels>
+    </Device>
+    <Device Id="TrackedVideoDevice" Type="VirtualMixer">
+      <InputChannels>
+        <InputChannel Id="TrackerStream" />
+        <InputChannel Id="VideoStream" />
+      </InputChannels>
+      <OutputChannels>
+        <OutputChannel Id="TrackedVideoStream" />
+      </OutputChannels>
+    </Device>
+  </DataCollection>
+  <Rendering WorldCoordinateFrame="Reference" DisplayedImageOrientation="MF">
+    <DisplayableObject Type="Model" ObjectCoordinateFrame="TransducerOrigin" Id="ProbeModel" File="Probe_L14-5_38.stl"
+      ModelToObjectTransform="
+        -1	0	0	29.7
+        0	-1	0	1.5
+        0	0	1	-14
+        0	0	0	1" />
+    <DisplayableObject Type="Model" ObjectCoordinateFrame="StylusTip" Id="StylusModel" File="Stylus_Example.stl"
+      ModelToObjectTransform="
+        1	0	0	-210
+        0	1	0	0
+        0	0	1	0
+        0	0	0	1" />
+    <DisplayableObject
+      Id="PhantomModel"
+      Type="Model"
+      ObjectCoordinateFrame="Phantom"
+      Opacity="0.6"
+      File="fCal_1.2.stl"
+      ModelToObjectTransform="
+        1	0	0	-25
+        0	0	-1	45
+        0	1	0	-5
+        0	0	0	1" />
+    <DisplayableObject Type="Image" ObjectCoordinateFrame="Image" Id="LiveImage" />
+  </Rendering>
+  <CoordinateDefinitions>
+    <Transform From="Image" To="Probe"
+      Matrix="
+        0.0289148	-0.0873113	-0.00955423	-110.253
+        -0.0700092	0.025587	-0.0937969	8.37346
+        0.104518	-0.0260163	-0.060185	3.23251
+        0	0	0	1"
+       Error="9.5853" Date="071015_162417" />
+    <Transform From="Phantom" To="Reference"
+      Matrix="
+        0.0244246	0.0073697	-0.999675	88.5224
+        -0.999529	-0.0183993	-0.0245567	76.3873
+        -0.0185742	0.999804	0.00691683	9.11233
+        0	0	0	1"
+       Error="2.16059" Date="071015_153110" />
+    <Transform From="StylusTip" To="Stylus"
+      Matrix="
+        -0.998466	0.0491756	-0.0254302	-214.322
+        0.0491915	0.998789	0	10.559
+        0.0253994	-0.00125095	-0.999677	5.45201
+        0	0	0	1"
+       Error="1.55187" Date="070815_145910" />
+    <Transform From="TransducerOriginPixel" To="TransducerOrigin"
+      Matrix="
+        0.144323	0	0	0
+        0	0.069187	0	0
+        0	0	0.111854	0
+        0	0	0	1"
+       Date="071015_162418" />
+  </CoordinateDefinitions>
+  <Segmentation
+    ApproximateSpacingMmPerPixel="0.078"
+    MorphologicalOpeningCircleRadiusMm="0.65"
+    MorphologicalOpeningBarSizeMm="2"
+    ClipRectangleOrigin="26 30"
+    ClipRectangleSize="459 285"
+    MaxLinePairDistanceErrorPercent="10"
+    AngleToleranceDegrees="10"
+    MaxAngleDifferenceDegrees="10"
+    MinThetaDegrees="-70"
+    MaxThetaDegrees="70"
+    MaxLineShiftMm="10"
+    ThresholdImagePercent="40"
+    CollinearPointsMaxDistanceFromLineMm="0.6"
+    UseOriginalImageIntensityForDotIntensityScore="0" />
+  <PhantomDefinition>
+    <Description Name="fCAL" Type="Multi-N" Version="1.2" WiringVersion="1.1" Institution="Queen&apos;s University PerkLab" />
+    <Geometry>
+      <Pattern Type="NWire">
+        <Wire Name="1:E2_e2" EndPointFront="20.0 0.0 10.0" EndPointBack="20.0 40.0 10.0" />
+        <Wire Name="2:I2_f2" EndPointFront="40.0 0.0 10.0" EndPointBack="25.0 40.0 10.0" />
+        <Wire Name="3:J2_j2" EndPointFront="45.0 0.0 10.0" EndPointBack="45.0 40.0 10.0" />
+      </Pattern>
+      <Pattern Type="NWire">
+        <Wire Name="4:E3_e3" EndPointFront="20.0 0.0 5.0" EndPointBack="20.0 40.0 5.0" />
+        <Wire Name="5:F3_j3" EndPointFront="25.0 0.0 5.0" EndPointBack="45.0 40.0 5.0" />
+        <Wire Name="6:K3_k3" EndPointFront="50.0 0.0 5.0" EndPointBack="50.0 40.0 5.0" />
+      </Pattern>
+      <Pattern Type="NWire">
+        <Wire Name="7:E4_e4" EndPointFront="20.0 0.0 0.0" EndPointBack="20.0 40.0 0.0" />
+        <Wire Name="8:J4_f4" EndPointFront="45.0 0.0 0.0" EndPointBack="25.0 40.0 0.0" />
+        <Wire Name="9:K4_k4" EndPointFront="50.0 0.0 0.0" EndPointBack="50.0 40.0 0.0" />
+      </Pattern>
+      <Landmarks>
+        <Landmark Name="#1" Position="95.0 5.0 15.0" />
+        <Landmark Name="#2" Position="95.0 40.0 15.0" />
+        <Landmark Name="#3" Position="95.0 40.0 0.0" />
+        <Landmark Name="#4" Position="95.0 0.0 0.0" />
+        <Landmark Name="#5" Position="-25.0 40.0 15.0" />
+        <Landmark Name="#6" Position="-25.0 0.0 10.0" />
+        <Landmark Name="#7" Position="-25.0 0.0 0.0" />
+        <Landmark Name="#8" Position="-25.0 40.0 0.0" />
+      </Landmarks>
+    </Geometry>
+  </PhantomDefinition>
+  <VolumeReconstruction
+    OutputSpacing="0.5 0.5 0.5"
+    ClipRectangleOrigin="0 0"
+    ClipRectangleSize="820 616"
+    Interpolation="LINEAR"
+    Optimization="FULL"
+    Compounding="On"
+    FillHoles="Off" />
+  <fCal
+    PhantomModelId="PhantomModel"
+    ReconstructedVolumeId="Volume"
+    TransducerModelId="ProbeModel"
+    StylusModelId="StylusModel"
+    ImageDisplayableObjectId="LiveImage"
+    NumberOfCalibrationImagesToAcquire="140"
+    NumberOfValidationImagesToAcquire="70"
+    NumberOfStylusCalibrationPointsToAcquire="200"
+    RecordingIntervalMs="100"
+    MaxTimeSpentWithProcessingMs="70"
+    ImageCoordinateFrame="Image"
+    ProbeCoordinateFrame="Probe"
+    ReferenceCoordinateFrame="Reference"
+    TransducerOriginCoordinateFrame="TransducerOrigin"
+    TransducerOriginPixelCoordinateFrame="TransducerOriginPixel"
+    TemporalCalibrationDurationSec="10"
+    DefaultSelectedChannelId="TrackedVideoStream" />
+  <PlusOpenIGTLinkServer MaxNumberOfIgtlMessagesToSend="1" MaxTimeSpentWithProcessingMs="50" ListeningPort="18945" SendValidTransformsOnly="true" OutputChannelId="TrackedVideoStream">
+    <DefaultClientInfo>
+      <MessageTypes>
+        <Message Type="IMAGE" />
+        <Message Type="TRANSFORM" />
+      </MessageTypes>
+      <ImageNames>
+        <Image Name="Image" EmbeddedTransformToFrame="Reference" />
+      </ImageNames>
+      <TransformNames>
+        <Transform Name="ProbeToTracker" />
+        <Transform Name="ReferenceToTracker" />
+        <Transform Name="StylusToTracker" />
+      </TransformNames>
+    </DefaultClientInfo>
+  </PlusOpenIGTLinkServer>
+  <vtkPivotCalibrationAlgo ObjectMarkerCoordinateFrame="Stylus" ReferenceCoordinateFrame="Reference" ObjectPivotPointCoordinateFrame="StylusTip" />
+  <vtkPhantomLandmarkRegistrationAlgo PhantomCoordinateFrame="Phantom" ReferenceCoordinateFrame="Reference" StylusTipCoordinateFrame="StylusTip" />
+  <vtkPhantomLinearObjectRegistrationAlgo PhantomCoordinateFrame="Phantom" ReferenceCoordinateFrame="Reference" StylusTipCoordinateFrame="StylusTip" />
+  <vtkProbeCalibrationAlgo ImageCoordinateFrame="Image" ProbeCoordinateFrame="Probe" PhantomCoordinateFrame="Phantom" ReferenceCoordinateFrame="Reference" />
+</PlusConfiguration>
